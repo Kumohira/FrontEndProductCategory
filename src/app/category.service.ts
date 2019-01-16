@@ -35,6 +35,15 @@ export class CategoryService {
         return this.http.delete(url, {headers: reqHeader});
     }
 
+    postRessource(endpoint, data) {
+        const reqHeader = new HttpHeaders({
+            'content-type': 'application/json',
+            'Authorization': this.tokenService.getToken(),
+        });
+
+        return this.http.post(this.authenticationService.dataHost + endpoint, data, {headers: reqHeader});
+    }
+
     // getProduct(id: number) {
     //     return this.http.get(this.authenticationService.host + '/products/' + id);
     // }

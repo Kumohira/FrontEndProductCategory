@@ -14,6 +14,8 @@ declare var $: any;
 })
 export class CategoriesComponent implements OnInit {
 
+    categoryMode = 'list';
+    productMode = 'list';
     categoryDisplayedColumns = ['name', 'action'];
     categoriesPage: any;
     categoryDataSource = new MatTableDataSource(this.categoriesPage);
@@ -27,8 +29,11 @@ export class CategoriesComponent implements OnInit {
 
     @ViewChild('productPaginator') productPaginator: MatPaginator;
     @ViewChild('productSort') productSort: MatSort;
+    selectedCategory: any;
+    query: any;
 
-    constructor(public http: HttpClient, public notification: NotificationsComponent, public router: Router, public categoryservice: CategoryService/*, public productservice: ProductService */) {
+    constructor(public http: HttpClient, public notification: NotificationsComponent, public router: Router,
+                public categoryservice: CategoryService/*, public productservice: ProductService */) {
 
     }
 
@@ -78,8 +83,6 @@ export class CategoriesComponent implements OnInit {
                     this.productsPage = data;
                     this.productDataSource.data = this.productsPage._embedded.products;
                     // this.productservice.currentCategory = category.id;
-                    console.log(data);
-                    console.log('data._embedded.products: ' + this.productsPage._embedded.products);
                 },
                 err => {
                     this.notification.showNotification('bottom', 'right', '0', err.error.error + ': ' + err.error.message)
@@ -87,6 +90,31 @@ export class CategoriesComponent implements OnInit {
                 }
             )
         ;
+    }
+
+    onNewCategory() {
+        this.categoryMode = 'newCategory';
+    }
+
+
+    onSaveCategory(formData: any) {
+        console.log(formData);
+
+        this.categoryservice.postRessource('/categories', formData).subscribe((result) => {
+            this.categoryMode = 'list';
+        })
+    }
+
+    onNewProduct() {
+        this.productMode = 'newProduct';
+    }
+
+    onSaveProduct(formData: any) {
+        console.log(formData);
+        delete formData.searchQuery;
+        this.categoryservice.postRessource('/customProducts', formData).subscribe((result) => {
+            this.productMode = 'list';
+        })
     }
 
     //

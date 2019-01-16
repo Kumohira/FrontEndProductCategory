@@ -7,8 +7,8 @@ import {TokenService} from './token.service';
 })
 export class AuthenticationService {
 
-    readonly authHost = 'http://localhost:8089';
-    readonly dataHost = 'http://localhost:8088';
+    readonly authHost = 'http://localhost:8080';
+    readonly dataHost = 'http://localhost:8081';
 
     constructor(public http: HttpClient, public tokenService: TokenService) {
     }
