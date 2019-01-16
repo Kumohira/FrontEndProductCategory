@@ -14,6 +14,7 @@ import {HttpClientModule} from '@angular/common/http';
 import {MatButtonModule, MatDialogModule, MatIconModule, MatInputModule} from '@angular/material';
 import {LoginPageComponent} from './login-page/login-page.component';
 
+
 @NgModule({
     imports: [
         BrowserAnimationsModule,
@@ -40,7 +41,7 @@ import {LoginPageComponent} from './login-page/login-page.component';
     declarations: [
         AppComponent,
         AdminLayoutComponent,
-        LoginPageComponent
+        LoginPageComponent,
     ],
     providers: [NotificationsComponent],
     bootstrap: [AppComponent]
