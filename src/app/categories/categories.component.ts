@@ -78,6 +78,8 @@ export class CategoriesComponent implements OnInit {
                     this.productsPage = data;
                     this.productDataSource.data = this.productsPage._embedded.products;
                     // this.productservice.currentCategory = category.id;
+                    console.log(data);
+                    console.log('data._embedded.products: ' + this.productsPage._embedded.products);
                 },
                 err => {
                     this.notification.showNotification('bottom', 'right', '0', err.error.error + ': ' + err.error.message)
@@ -98,75 +100,61 @@ export class CategoriesComponent implements OnInit {
     //     this.router.navigate(['editproduct']);
     // }
     //
-    // onDeletecategory(category: Category) {
-    //     if (category.products.length > 0) {
-    //         this.showNotification('bottom', 'right', 0, 'Vous ne pouvais pas supprimé un produit non vide.');
-    //     } else {
-    //         this.categoryservice.deleteCategory(category.id)
-    //             .subscribe(
-    //                 data => {
-    //                     this.categoriesPage.splice(this.categoriesPage.indexOf(category), 1);
-    //                     this.categoryDataSource.data = this.categoriesPage;
-    //                     setTimeout(() => {
-    //                         this.categoryDataSource.paginator = this.categoryPaginator;
-    //                     });
-    //                     this.showNotification('bottom', 'right', 1, 'Le produit a été supprimé avec succès.');
-    //                 },
-    //                 err => {
-    //                     this.showNotification('bottom', 'right', 0, 'erreur inconnu.');
-    //                 }
-    //             )
-    //         ;
-    //         // console.log(client);
-    //     }
+    onDeleteCategory(category) {
+        console.log(this.categoriesPage._embedded.categories);
+        console.log(this.categoriesPage._embedded.categories.indexOf(category));
+        this.categoryservice.getRessource(category._links.products.href)
+            .subscribe(
+                dataa => {
+                    if (dataa._embedded.products.length > 0) {
+                        this.notification.showNotification('bottom', 'right', 0, 'Category is not empty.');
+                    } else {
+                        console.log(category._links.self.href);
+                        this.categoryservice.deleteRessource(category._links.self.href)
+                            .subscribe(
+                                data => {
+                                    this.categoriesPage._embedded.categories.splice(this.categoriesPage._embedded.categories.indexOf(category), 1);
+                                    this.categoryDataSource.data = this.categoriesPage._embedded.categories;
+                                    setTimeout(() => {
+                                        this.categoryDataSource.paginator = this.categoryPaginator;
+                                    });
+                                    this.notification.showNotification('bottom', 'right', 1, 'Category deleted.');
+                                },
+                                err => {
+                                    this.notification.showNotification('bottom', 'right', 0, err.error.error + ': ' + err.error.message);
+                                }
+                            )
+                        ;
+                        // console.log(client);
+                    }
+                },
+                err => {
+                    this.notification.showNotification('bottom', 'right', '0', err.error.error + ': ' + err.error.message)
+                    console.log(err.error.error + ': ' + err.error.message);
+                }
+            )
+        ;
+
+
+    }
     //
-    // }
-    //
-    // onDeleteProduct(product: Product) {
-    //     this.clientservice.getClientsByProduct(product.id)
-    //         .subscribe(
-    //             clientList => {
-    //
-    //                 const clients: Array<string> = clientList;
-    //                 if (clients.length > 0) {
-    //
-    //                     let message = 'Le sous-produit que vous voullez suppimé a des client qui y ont accés. [ ';
-    //                     clients.forEach(client => {
-    //                         message = message.concat(client + ', ');
-    //                     });
-    //                     message = message.slice(0, -2);
-    //                     message = message.concat(' ]');
-    //
-    //                     this.showNotification('bottom', 'right', 0, message);
-    //                 } else {
-    //                     this.productservice.deleteProduct(product.id)
-    //                         .subscribe(
-    //                             data => {
-    //                                 this.productsPage.splice(this.productsPage.indexOf(product), 1);
-    //                                 this.productDataSource.data = this.productsPage;
-    //                                 setTimeout(() => {
-    //                                     this.productDataSource.paginator = this.productPaginator;
-    //                                 });
-    //                                 this.showNotification('bottom', 'right', 1, 'Le sous-produit a été supprimé avec succès.');
-    //                             },
-    //                             err => {
-    //                                 this.showNotification('bottom', 'right', 0, 'erreur inconnu.');
-    //                             }
-    //                         )
-    //                     ;
-    //                 }
-    //             },
-    //             (err: HttpErrorResponse) => {
-    //                 console.log(err);
-    //                 if (err.status === 500) {
-    //                     this.showNotification('bottom', 'right', 0, 'Erreur system');
-    //                 } else {
-    //                     this.showNotification('bottom', 'right', 0, 'Erreur inconnu');
-    //                 }
-    //
-    //             }
-    //         )
-    //     ;
-    // }
+    onDeleteProduct(product) {
+
+        this.categoryservice.deleteRessource(product._links.self.href)
+            .subscribe(
+                data => {
+                    this.productsPage._embedded.products.splice(this.productsPage._embedded.products.indexOf(product), 1);
+                    this.productDataSource.data = this.productsPage._embedded.products;
+                    setTimeout(() => {
+                        this.productDataSource.paginator = this.productPaginator;
+                    });
+                    this.notification.showNotification('bottom', 'right', 1, 'Product deleted.');
+                },
+                err => {
+                    this.notification.showNotification('bottom', 'right', 0, err.error.error + ': ' + err.error.message);
+                }
+            )
+        ;
+    }
 
 }
