@@ -133,7 +133,7 @@ export class CategoriesComponent implements OnInit {
         console.log(this.categoriesPage._embedded.categories.indexOf(category));
         this.categoryservice.getRessource(category._links.products.href)
             .subscribe(
-                dataa => {
+                (dataa: any) => {
                     if (dataa._embedded.products.length > 0) {
                         this.notification.showNotification('bottom', 'right', 0, 'Category is not empty.');
                     } else {
