@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {TokenService} from './token.service';
+import {Router} from '@angular/router';
 
 @Injectable({
     providedIn: 'root'
@@ -10,7 +11,7 @@ export class AuthenticationService {
     readonly authHost = 'http://localhost:8080';
     readonly dataHost = 'http://localhost:8081';
 
-    constructor(public http: HttpClient, public tokenService: TokenService) {
+    constructor(public router: Router, public http: HttpClient, public tokenService: TokenService) {
     }
 
     Register(postData, reqHeader) {
@@ -24,5 +25,6 @@ export class AuthenticationService {
     Logout() {
         this.tokenService.token = null;
         this.tokenService.deleteToken();
+        this.router.navigate(['login']);
     }
 }
