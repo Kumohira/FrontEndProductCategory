@@ -16,6 +16,9 @@ export class CategoriesComponent implements OnInit {
 
     categoryMode = 'list';
     productMode = 'list';
+    currentCategoryOnEdit;
+    currentProductOnEdit;
+    currentCategory;
     categoryDisplayedColumns = ['name', 'action'];
     categoriesPage: any;
     categoryDataSource = new MatTableDataSource(this.categoriesPage);
@@ -58,6 +61,11 @@ export class CategoriesComponent implements OnInit {
     }
 
     ngOnInit() {
+        this.getCategories();
+    }
+
+    getCategories() {
+
         this.categoryDataSource.paginator = this.categoryPaginator;
         this.productDataSource.paginator = this.productPaginator;
 
@@ -77,6 +85,7 @@ export class CategoriesComponent implements OnInit {
     }
 
     onCheckCategory(category) {
+        this.currentCategory = category;
         this.categoryservice.getRessource(category._links.products.href)
             .subscribe(
                 data => {
@@ -102,6 +111,7 @@ export class CategoriesComponent implements OnInit {
 
         this.categoryservice.postRessource('/categories', formData).subscribe((result) => {
             this.categoryMode = 'list';
+            this.getCategories();
         })
     }
 
@@ -114,6 +124,9 @@ export class CategoriesComponent implements OnInit {
         delete formData.searchQuery;
         this.categoryservice.postRessource('/customProducts', formData).subscribe((result) => {
             this.productMode = 'list';
+            if (this.currentCategory != null) {
+                this.onCheckCategory(this.currentCategory);
+            }
         })
     }
 
@@ -133,7 +146,7 @@ export class CategoriesComponent implements OnInit {
         console.log(this.categoriesPage._embedded.categories.indexOf(category));
         this.categoryservice.getRessource(category._links.products.href)
             .subscribe(
-                dataa => {
+                (dataa: any) => {
                     if (dataa._embedded.products.length > 0) {
                         this.notification.showNotification('bottom', 'right', 0, 'Category is not empty.');
                     } else {
@@ -185,4 +198,45 @@ export class CategoriesComponent implements OnInit {
         ;
     }
 
+    onEditCategory(row) {
+        console.log(row);
+        this.categoryMode = 'editCategory';
+        this.currentCategoryOnEdit = row;
+
+    }
+
+    onSaveEditCategory(formData: any) {
+        console.log(formData);
+        this.categoryservice.patchRessource(this.currentCategoryOnEdit._links.self.href, formData).subscribe((result) => {
+            console.log(result);
+            this.categoryMode = 'list'
+        })
+    }
+
+    onEditProduct(row) {
+        console.log(row);
+        this.categoryservice.getRessource(row._links.category.href).subscribe(((result: any) => {
+            this.currentProductOnEdit._links.category.href = result._links.self.href;
+        }))
+        this.currentProductOnEdit = row;
+        this.productMode = 'editProduct';
+    }
+
+    onSaveEditProduct(formData: any) {
+        formData.id = this.currentProductOnEdit._links.self.href;
+        console.log(formData);
+        this.categoryservice.editProduct('/customProducts', formData).subscribe((result) => {
+            this.productMode = 'list';
+            this.onCheckCategory(this.currentCategory);
+        })
+
+    }
+
+    onbackCategory() {
+        this.categoryMode = 'list';
+    }
+
+    onbackProduct() {
+        this.productMode = 'list';
+    }
 }

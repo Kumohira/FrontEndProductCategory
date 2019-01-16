@@ -35,6 +35,16 @@ export class CategoryService {
         return this.http.delete(url, {headers: reqHeader});
     }
 
+    patchRessource(url, data) {
+        const reqHeader = new HttpHeaders({
+            'content-type': 'application/json',
+            'Authorization': this.tokenService.getToken(),
+        });
+
+        return this.http.patch(url, data, {headers: reqHeader});
+    }
+
+    
     postRessource(endpoint, data) {
         const reqHeader = new HttpHeaders({
             'content-type': 'application/json',
@@ -59,4 +69,12 @@ export class CategoryService {
     // deleteProduct(id: number) {
     //     return this.http.delete(this.authenticationService.host + '/products/' + id);
     // }
+    editProduct(endpoint: string, formData: any) {
+        const reqHeader = new HttpHeaders({
+            'content-type': 'application/json',
+            'Authorization': this.tokenService.getToken(),
+        });
+
+        return this.http.put(this.authenticationService.dataHost + '/customProducts', formData, {headers: reqHeader});
+    }
 }
